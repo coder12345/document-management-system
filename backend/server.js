@@ -447,10 +447,8 @@ app.get('/api/getdocument', async (req, res) => {
         res.status(500).json({ success: false, message: 'Error fetching document details' });
     }
 });
-app.listen(3000, () => {
-  console.log('Server running on port 3000');
-  
-});
+const PORT = process.env.PORT || 3000;
+app.listen(PORT);
 
 
 
