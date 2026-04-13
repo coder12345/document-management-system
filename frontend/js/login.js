@@ -26,9 +26,12 @@ loginButton.addEventListener("click", async (event) => {
     });
     let parsedresponse = await response.json();   
     console.log(parsedresponse);
-    localStorage.setItem("token", parsedresponse.token);
+    
     statusMessage.textContent = parsedresponse.message;
-    window.location.href = '/dashboard';
+    if (parsedresponse.success) {
+        localStorage.setItem("token", parsedresponse.token);
+        window.location.href = '/dashboard';
+    }
 });
 registerButton.addEventListener("click", (event) => {
     event.preventDefault();

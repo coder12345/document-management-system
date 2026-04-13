@@ -16,7 +16,7 @@ registerButton.addEventListener("click", async (event) => {
     let password = form.elements["password"].value;
     let fname = form.elements["fname"].value;
     let lname = form.elements["lname"].value;
-    let usertype = form.elements["usertype"].value;
+    
     let confirmPassword = form.elements["confirmPassword"].value;
 
     if (password !== confirmPassword) {
@@ -30,7 +30,7 @@ registerButton.addEventListener("click", async (event) => {
             password: password,
             fname: fname,
             lname: lname,
-            usertype: usertype
+            
         });
     console.log(body);
     let response = await fetch("/api/register", {
