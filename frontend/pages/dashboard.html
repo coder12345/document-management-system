@@ -1,22 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — DocVault</title>
+    <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/dashboard.css">
-
 </head>
-
-
 <body>
-    <h1>Dashboard</h1>
-    <p id="welcome-message">Welcome to the dashboard!</p>
-    
-    <div id ="container"></div>
-    <div id ="UIContainer"></div>
 
+<header class="topbar">
+    <div class="topbar-brand">
+        <div class="topbar-brand-icon">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z"/></svg>
+        </div>
+        <span class="topbar-brand-name">DocVault</span>
+    </div>
+    <p id="welcome-message">Loading…</p>
+</header>
 
+<div class="main-layout">
+    <aside id="UIContainer"></aside>
+    <main id="container"></main>
+</div>
 
-    <script src="../js/dashboard.js"></script>
-    
+<script src="../js/dashboard.js"></script>
 </body>
 </html>
