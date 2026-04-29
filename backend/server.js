@@ -37,23 +37,25 @@ const client = new pg.Client({
 });
 
 const uploadToCloudinary = async (fileBuffer, originalName) => {
-                return new Promise((resolve, reject) => {
-                const stream = cloudinary.uploader.upload_stream(
-                {
-                    resource_type: "auto",
-                    folder: "uploads",
-                    public_id: originalName.split(".")[0],
-                },
-                    (error, result) => {
-                    if (error) return reject(error);
-                    resolve(result);
-                }
-            );
+    return new Promise((resolve, reject) => {
+        const isPDF = originalName.toLowerCase().endsWith(".pdf");
 
-            stream.end(fileBuffer);
-            });
-        };
+        const stream = cloudinary.uploader.upload_stream(
+           {
+            resource_type: isPDF ? "raw" : "auto",
+            use_filename: true,
+            unique_filename: false,
+            filename_override: originalName
+        },
+            (error, result) => {
+                if (error) return reject(error);
+                resolve(result);
+            }
+        );
 
+        stream.end(fileBuffer);
+    });
+};
 
 client.connect();
 app.use(express.json());
@@ -206,9 +208,12 @@ app.post('/api/upload', authenticateToken, upload.single("file"), async (req, re
         let group_id = req.body.group_id;
         let folder_id = req.body.folder_id;
         let document_id = req.body.document_id;
-        let update = false;
+        let name = req.body.name;
+        let update = req.body.update == "true"
+        console.log("updating " + update);
+        let changeNote = req.body.changeNote;
         let final_folder_id = null;
-        console.log(user_id, group_id, folder_id, document_id);
+        console.log(user_id, group_id, folder_id, document_id, name);
         let group_membership = await client.query(
             "SELECT EXISTS (SELECT 1 FROM group_memberships WHERE user_id = $1 AND group_id = $2 AND role IN ('admin', 'member'))",
             [user_id, group_id]
@@ -232,19 +237,9 @@ app.post('/api/upload', authenticateToken, upload.single("file"), async (req, re
 
             
 
-                if (document_id && (document_id !== '')) {
-                    // Check if document exists and belongs to the user, then do update instead of insert
-                    let documentexists = await client.query("SELECT EXISTS (SELECT 1 FROM documents WHERE id = $1 AND group_id = $2)", [document_id, group_id]);
-                    if (!documentexists.rows[0].exists) {
-                        console.log("document does not exist or does not belong in this group, document_id:", document_id, "group_id:", group_id);
-                        return res.status(400).json({ success: false, message: 'Document does not exist or does not belong in this group'});
-                        
-                    } else {
-                        update = true
-                    }
-                } 
 
             // Validate folder id
+            if (!update) {
             if (folder_id && (folder_id !== '')) {
                 let folderexists = await client.query("SELECT EXISTS (SELECT 1 FROM folders where id = $1 AND group_id = $2)", [folder_id, group_id]);
                 if (!folderexists.rows[0].exists) {
@@ -264,7 +259,7 @@ app.post('/api/upload', authenticateToken, upload.single("file"), async (req, re
                 }
                 final_folder_id = root_folder_id.rows[0].id;
             }
-
+        }
             
 
 
@@ -278,21 +273,21 @@ app.post('/api/upload', authenticateToken, upload.single("file"), async (req, re
             
             const cloudResult = await uploadToCloudinary(
                 req.file.buffer,
-                req.file.originalname
+                req.body.name
                 
             );
 
             if (update) {
-
-                let versionquery = await client.query('INSERT INTO document_versions (document_id, cloud_public_id, version_number, uploaded_by, secure_url) VALUES ($1, $2, (SELECT COALESCE(MAX(version_number), 0) + 1 FROM document_versions WHERE document_id = $1), $3, $4) RETURNING id', [document_id, cloudResult.public_id, user_id, cloudResult.secure_url]);
+                console.log('updating..')
+                let versionquery = await client.query('INSERT INTO document_versions (document_id, cloud_public_id, version_number, uploaded_by, secure_url, change_note, status) VALUES ($1, $2, (SELECT COALESCE(MAX(version_number), 0) + 1 FROM document_versions WHERE document_id = $1), $3, $4, $5, $6) RETURNING id', [document_id, cloudResult.public_id, user_id, cloudResult.secure_url, changeNote, "pending"]);
                 let version_id = versionquery.rows[0].id;
-                let versionupdate = await client.query('UPDATE documents SET current_version_id = $1, title = $2 WHERE id = $3', [version_id, req.file.originalname, document_id]);
+                let versionupdate = await client.query('UPDATE documents SET current_version_id = $1 WHERE id = $2', [version_id, document_id]);
                 return res.json({ success: true, message: 'File uploaded successfully', document_id: document_id });
             } else {
-
-                let insertdocquery = await client.query("INSERT INTO documents (group_id, folder_id, title, status, uploaded_by) VALUES ($1, $2, $3, 'pending', $4) RETURNING id", [group_id, final_folder_id, req.file.originalname, user_id]);
+                console.log('no update')
+                let insertdocquery = await client.query("INSERT INTO documents (group_id, folder_id, title, status, uploaded_by) VALUES ($1, $2, $3, 'pending', $4) RETURNING id", [group_id, final_folder_id, name, user_id]);
                 let new_document_id = insertdocquery.rows[0].id;
-                let versionquery = await client.query('INSERT INTO document_versions (document_id, cloud_public_id, version_number, uploaded_by, secure_url) VALUES ($1, $2, 1, $3, $4) RETURNING id', [new_document_id, cloudResult.public_id, user_id, cloudResult.secure_url]);
+                let versionquery = await client.query('INSERT INTO document_versions (document_id, cloud_public_id, version_number, uploaded_by, secure_url, status) VALUES ($1, $2, 1, $3, $4, $5) RETURNING id', [new_document_id, cloudResult.public_id, user_id, cloudResult.secure_url, 'pending']);
                 let version_id = versionquery.rows[0].id;
                 let versionupdate = await client.query('UPDATE documents SET current_version_id = $1 WHERE id = $2', [version_id, new_document_id]);
                 return res.json({ success: true, message: 'File uploaded successfully', document_id: new_document_id });
@@ -426,27 +421,176 @@ app.post('/api/joingroup', authenticateToken, async (req, res) => {
 });
 
 
-app.get('/api/getdocument', async (req, res) => {
-    try {
-        
+app.post('/api/getdocument', async (req, res) => {
+   
+    
+
+    let doc_id = req.body.doc_id
+
+    let documentQuery = await client.query("SELECT dv.id, dv.version_number, dv.secure_url, dv.cloud_public_id, dv.change_note, dv.created_at, dv.status, d.current_version_id, u.fname || ' ' || u.lname AS uploaded_by  FROM document_versions dv JOIN documents d ON dv.document_id = d.id  JOIN users u ON dv.uploaded_by = u.id WHERE dv.document_id = $1  ORDER BY dv.version_number DESC;", [doc_id]);
+        if (documentQuery.rows.length === 0) {
+            console.log("Document does not Exist");
+            return res.status(400).json({ success: false, message: 'Docuemnt does not exist' });
+        } else {
+
+            return res.json(documentQuery.rows);
+        }
 
 
 
-        const document_id = req.query.document_id;
-     
-            let documentresult = await client.query(
-                'SELECT dv.secure_url FROM documents d JOIN document_versions dv ON d.current_version_id = dv.id WHERE d.id = $1',
-                [document_id]
-            );
-            console.log(documentresult.rows[0]);
-            res.redirect(documentresult.rows[0].secure_url);
-        
-    }
-    catch (error) {
-        console.error('Error fetching document details', error);
-        res.status(500).json({ success: false, message: 'Error fetching document details' });
-    }
+
 });
+
+app.get("/api/file/:id", authenticateToken, async (req, res) => {
+    const result = await client.query(
+        "SELECT cloud_public_id FROM document_versions WHERE id = $1",
+        [req.params.id]
+    );
+
+    const url = cloudinary.url(result.rows[0].cloud_public_id, {
+        resource_type: "raw",
+        secure: true
+    });
+    console
+    res.redirect(url);
+});
+
+app.post("/api/version/approve", authenticateToken, async (req, res) => {
+    const { version_id } = req.body;
+
+    const userId = req.user.id;
+
+   
+    
+
+    
+    await client.query("UPDATE document_versions SET status = 'approved' WHERE id = $1", [version_id]);
+
+    
+    await client.query("UPDATE documents SET current_version_id = $1 WHERE id = (SELECT document_id FROM document_versions WHERE id = $1)", [version_id]);
+
+    res.json({ success: true });
+});
+
+app.post("/api/version/reject", authenticateToken, async (req, res) => {
+    const { version_id } = req.body;
+
+    const userId = req.user.id;
+
+    
+
+    await client.query("UPDATE document_versions SET status = 'rejected' WHERE id = $1", [version_id]);
+
+    res.json({ success: true });
+});
+
+app.post("/api/delete/group", authenticateToken, async (req, res) => {
+    const { group_id } = req.body;
+    const user_id = req.user.id;
+
+    const perm = await client.query(
+        "SELECT role FROM group_memberships WHERE user_id=$1 AND group_id=$2",
+        [user_id, group_id]
+    );
+
+    if (!perm.rows.length || perm.rows[0].role !== "admin") {
+        return res.status(403).json({ error: "No permission" });
+    }
+
+    const versions = await client.query(
+        "SELECT cloud_public_id FROM document_versions WHERE document_id IN (SELECT id FROM documents WHERE group_id=$1)",
+        [group_id]
+    );
+
+    for (let v of versions.rows) {
+        await cloudinary.uploader.destroy(v.cloud_public_id, { resource_type: "raw" });
+    }
+
+    await client.query("DELETE FROM groups WHERE id=$1", [group_id]);
+
+    res.json({ success: true });
+});
+
+app.post("/api/delete/folder", authenticateToken, async (req, res) => {
+    const { folder_id } = req.body;
+    const user_id = req.user.id;
+
+    const groupRes = await client.query(
+        "SELECT group_id FROM folders WHERE id=$1",
+        [folder_id]
+    );
+
+    if (!groupRes.rows.length) {
+        return res.status(404).json({ error: "Folder not found" });
+    }
+
+    const group_id = groupRes.rows[0].group_id;
+
+    const perm = await client.query(
+        "SELECT role FROM group_memberships WHERE user_id=$1 AND group_id=$2",
+        [user_id, group_id]
+    );
+
+    if (!perm.rows.length || perm.rows[0].role !== "admin") {
+        return res.status(403).json({ error: "No permission" });
+    }
+
+    const versions = await client.query(
+        `SELECT dv.cloud_public_id
+         FROM document_versions dv
+         JOIN documents d ON dv.document_id = d.id
+         WHERE d.folder_id = $1`,
+        [folder_id]
+    );
+
+    for (let v of versions.rows) {
+        await cloudinary.uploader.destroy(v.cloud_public_id, { resource_type: "raw" });
+    }
+
+    await client.query("DELETE FROM folders WHERE id=$1", [folder_id]);
+
+    res.json({ success: true });
+});
+
+app.post("/api/delete/document", authenticateToken, async (req, res) => {
+    const { doc_id } = req.body;
+    const user_id = req.user.id;
+
+    const doc = await client.query(
+        "SELECT group_id FROM documents WHERE id=$1",
+        [doc_id]
+    );
+
+    if (!doc.rows.length) {
+        return res.status(404).json({ error: "Document not found" });
+    }
+
+    const group_id = doc.rows[0].group_id;
+
+    const perm = await client.query(
+        "SELECT role FROM group_memberships WHERE user_id=$1 AND group_id=$2",
+        [user_id, group_id]
+    );
+
+    if (!perm.rows.length || perm.rows[0].role !== "admin") {
+        return res.status(403).json({ error: "No permission" });
+    }
+
+    const versions = await client.query(
+        "SELECT cloud_public_id FROM document_versions WHERE document_id=$1",
+        [doc_id]
+    );
+
+    for (let v of versions.rows) {
+        await cloudinary.uploader.destroy(v.cloud_public_id, { resource_type: "raw" });
+    }
+
+    await client.query("DELETE FROM documents WHERE id=$1", [doc_id]);
+
+    res.json({ success: true });
+});
+
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT);
 

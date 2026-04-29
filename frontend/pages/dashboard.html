@@ -8,7 +8,12 @@
     <link rel="stylesheet" href="../css/dashboard.css">
 </head>
 <body>
-
+<div id="modal" class="modal hidden">
+    <div class="modal-content">
+        <span id="modalClose">&times;</span>
+        <p id="modalText"></p>
+    </div>
+</div>
 <header class="topbar">
     <div class="topbar-brand">
         <div class="topbar-brand-icon">
@@ -23,7 +28,7 @@
     <aside id="UIContainer"></aside>
     <main id="container"></main>
 </div>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="../js/dashboard.js"></script>
 </body>
 </html>

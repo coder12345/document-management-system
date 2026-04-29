@@ -46,11 +46,11 @@
             </div>
             <div class="field">
                 <label for="password">Password</label>
-                <input name="password" id="password" type="password" placeholder="Create a password" autocomplete="new-password">
+                <input name="password" id="password" type="password" placeholder="Create a password" autocomplete="new-password" oninput="validatePassword1()">
             </div>
             <div class="field">
                 <label for="confirmPassword">Confirm password</label>
-                <input name="confirmPassword" id="confirmPassword" type="password" placeholder="Repeat your password" autocomplete="new-password">
+                <input name="confirmPassword" id="confirmPassword" type="password" placeholder="Repeat your password" autocomplete="new-password" oninput="validatePassword1()">
             </div>
         </div>
         <button id="registerButton" type="button" class="btn-primary">Create account</button>
