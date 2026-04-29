@@ -1,0 +1,447 @@
+@import url('../css/styles.css');
+
+html {
+    height: 100%;
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    height: 100%;
+}
+
+.main-layout {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+}
+
+/* ── Top Bar ── */
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    height: 60px;
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 1px 0 var(--border);
+}
+
+.topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+
+.topbar-brand-icon {
+    width: 32px;
+    height: 32px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.topbar-brand-icon svg {
+    width: 18px;
+    height: 18px;
+    fill: #fff;
+}
+
+.topbar-brand-name {
+    font-family: var(--font-display);
+    font-size: 18px;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+}
+
+#welcome-message {
+    font-size: 14px;
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+/* ── Sidebar ── */
+#UIContainer {
+    width: 220px;
+    flex-shrink: 0;
+    background: var(--bg-surface);
+    border-right: 1px solid var(--border);
+    padding: 24px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+/* ── Content area ── */
+#container {
+    flex: 1;
+    padding: 28px 32px;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 12px;
+}
+
+/* ── File/Folder Cards ── */
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 18px 16px 14px;
+    width: 160px;
+    cursor: pointer;
+    transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition), background var(--transition);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    animation: itemIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.card::before {
+    content: '';
+    display: block;
+    width: 34px;
+    height: 34px;
+    background: var(--bg-hover);
+    border-radius: 8px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%237c6ef5'%3E%3Cpath d='M10 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-8l-2-2z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: 18px;
+    background-position: center;
+}
+
+.card.document::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233ecf8e'%3E%3Cpath d='M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z'/%3E%3C/svg%3E");
+}
+
+.card p {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1.35;
+    word-break: break-word;
+    font-family: var(--font-body);
+}
+
+.card:hover {
+    border-color: var(--accent-border);
+    box-shadow: 0 0 0 3px var(--accent-glow), var(--shadow-md);
+    transform: translateY(-2px);
+    background: var(--bg-hover);
+}
+
+/* ── Sidebar Action Buttons ── */
+.uicard {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    padding: 9px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all var(--transition);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-align: left;
+    width: 100%;
+}
+
+.uicard p {
+    font-size: 13px;
+    font-weight: 500;
+    color: inherit;
+    font-family: var(--font-body);
+}
+
+.uicard:hover {
+    background: var(--bg-card);
+    border-color: var(--border);
+    color: var(--accent-light);
+}
+
+.uicard.logout {
+    margin-top: auto;
+    color: var(--danger);
+}
+
+.uicard.logout:hover {
+    background: rgba(240, 111, 111, 0.08);
+    border-color: rgba(240, 111, 111, 0.2);
+    color: var(--danger);
+}
+
+/* ── Typography ── */
+h1, h2 {
+    font-family: var(--font-display);
+    color: var(--text-primary);
+    letter-spacing: -0.4px;
+}
+
+h1 { font-size: 22px; }
+h2 { font-size: 20px; margin-bottom: 16px; }
+
+/* ── Inline forms ── */
+#container form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 380px;
+}
+#changeNote {
+     width: 200px;
+    height: 150px;
+    padding: 10px;        
+    line-height: 1.4; 
+    
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--text-primary);
+    background: var(--bg-input);
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 11px 14px;
+    width: 100%;
+    outline: none;
+    transition: border-color var(--transition), box-shadow var(--transition);
+    
+    
+}
+
+
+#container form input[type="text"],
+#container form input[type="file"] {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--text-primary);
+    background: var(--bg-input);
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 11px 14px;
+    width: 100%;
+    outline: none;
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+#container form input::placeholder {
+    color: var(--text-muted);
+}
+
+#container form input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+#container form button,
+#container form input[type="submit"] {
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--accent);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 11px 20px;
+    cursor: pointer;
+    transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+    align-self: flex-start;
+}
+
+#container form button:hover,
+#container form input[type="submit"]:hover {
+    background: var(--accent-light);
+    box-shadow: 0 4px 16px rgba(124,110,245,0.35);
+    transform: translateY(-1px);
+}
+
+.document_view {
+    width: 100%;
+    height: 80vh;          
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;      
+    background: #f9f9f9;  
+    display: flex;
+    flex: 5
+}
+.docuemnt_versions {
+    flex: 5
+}
+.doccard {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 18px 16px 14px;
+    width: 160px;
+    cursor: pointer;
+    transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition), background var(--transition);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    animation: itemIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.doccard p {
+    font-size: 12px;
+}
+
+.icon-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition);
+    padding: 0;
+}
+
+.icon-btn svg {
+    width: 16px;
+    height: 16px;
+    fill: var(--text-secondary);
+    transition: fill var(--transition);
+}
+
+.icon-btn:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent-border);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.icon-btn:hover svg {
+    fill: var(--accent);
+}
+
+.icon-btn.approve:hover {
+    border-color: #3ecf8e;
+    box-shadow: 0 0 0 2px rgba(62, 207, 142, 0.25);
+}
+
+.icon-btn.approve:hover svg {
+    fill: #3ecf8e;
+}
+
+.icon-btn.reject:hover {
+    border-color: #f06f6f;
+    box-shadow: 0 0 0 2px rgba(240, 111, 111, 0.25);
+}
+
+.icon-btn.reject:hover svg {
+    fill: #f06f6f;
+}
+
+.version-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.status-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 999px;
+    display: inline-block;
+    margin-top: 4px;
+}
+
+
+.status-approved {
+    background: rgba(62, 207, 142, 0.15);
+    color: #3ecf8e;
+}
+
+.status-pending {
+    background: rgba(255, 193, 7, 0.15);
+    color: #ffc107;
+}
+
+.status-rejected {
+    background: rgba(240, 111, 111, 0.15);
+    color: #f06f6f;
+}
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 500px;
+    width: 80%;
+}
+
+#modalClose {
+    float: right;
+    cursor: pointer;
+}
+.highlight-approved {
+    border-left: 4px solid #2ecc71;
+    background: rgba(46, 204, 113, 0.1);
+}
+
+.highlight-pending {
+    border-left: 4px solid #f1c40f;
+    background: rgba(241, 196, 15, 0.1);
+}
+
+#viewer {
+    width: 100%;
+    height: 100% 
+}
+html, body {
+    height: 100%;
+}
+
+#container {
+    height: 100%;
+}
+
+#UI {
+    flex: 1;
+    height: 100%;
+}
+
+.document_view {
+    width: 100%;
+    height: 100%;
+}
+@keyframes itemIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+

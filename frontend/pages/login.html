@@ -1,5 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In — DocVault</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/login.css">
+</head>
+<body>
 
-<p1>This is a test, if you can see this text, the server works.</p1>
+<div class="auth-card">
+    <div class="auth-brand">
+        <div class="auth-brand-icon">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z"/></svg>
+        </div>
+        <span class="auth-brand-name">DocVault</span>
+    </div>
+
+    <h1 class="auth-heading">Welcome back</h1>
+    <p class="auth-subheading">Sign in to your account to continue</p>
+
+    <form id="loginForm">
+        <div class="field-group">
+            <div class="field">
+                <label for="username">Username</label>
+                <input id="username" type="text" placeholder="Enter your username" autocomplete="username">
+            </div>
+            <div class="field">
+                <label for="password">Password</label>
+                <input id="password" type="password" placeholder="Enter your password" autocomplete="current-password">
+            </div>
+        </div>
+        <input id="loginButton" type="submit" class="btn-primary" value="Sign in">
+    </form>
+
+    <div class="auth-divider"><span>or</span></div>
+    <button id="registerButton" class="btn-secondary">Create an account</button>
+    <p id="message"></p>
+</div>
+
+<script src="../js/login.js"></script>
+</body>
 </html>

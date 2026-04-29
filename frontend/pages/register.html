@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account — DocVault</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/login.css">
+    <style>
+        .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .auth-card { max-width: 460px; }
+    </style>
+</head>
+<body>
+
+<div class="auth-card">
+    <div class="auth-brand">
+        <div class="auth-brand-icon">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM6 20V4h5v7h7v9H6z"/></svg>
+        </div>
+        <span class="auth-brand-name">DocVault</span>
+    </div>
+
+    <h1 class="auth-heading">Create account</h1>
+    <p class="auth-subheading">Join your team's document workspace</p>
+
+    <form id="registerForm">
+        <div class="field-group">
+            <div class="field-row">
+                <div class="field">
+                    <label for="fname">First name</label>
+                    <input name="fname" id="fname" type="text" placeholder="Jane" autocomplete="given-name">
+                </div>
+                <div class="field">
+                    <label for="lname">Last name</label>
+                    <input name="lname" id="lname" type="text" placeholder="Smith" autocomplete="family-name">
+                </div>
+            </div>
+            <div class="field">
+                <label for="username">Username</label>
+                <input name="username" id="username" type="text" placeholder="Choose a username" autocomplete="username">
+            </div>
+            <div class="field">
+                <label for="password">Password</label>
+                <input name="password" id="password" type="password" placeholder="Create a password" autocomplete="new-password" oninput="validatePassword1()">
+            </div>
+            <div class="field">
+                <label for="confirmPassword">Confirm password</label>
+                <input name="confirmPassword" id="confirmPassword" type="password" placeholder="Repeat your password" autocomplete="new-password" oninput="validatePassword1()">
+            </div>
+        </div>
+        <button id="registerButton" type="button" class="btn-primary">Create account</button>
+    </form>
+
+    <div class="auth-divider"><span>already have an account?</span></div>
+    <button id="loginButton" type="button" class="btn-secondary">Back to sign in</button>
+    <p id="message"></p>
+    <p id="statusMessage"></p>
+</div>
+
+<script src="../js/register.js"></script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap');
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg-base:    #0f1117;
+    --bg-surface: #161b27;
+    --bg-card:    #1e2436;
+    --bg-hover:   #252d42;
+    --bg-input:   #1a2030;
+
+    --text-primary:   #e8eaf0;
+    --text-secondary: #9ba3b8;
+    --text-muted:     #5c6478;
+
+    --accent:        #7c6ef5;
+    --accent-light:  #9d91f7;
+    --accent-glow:   rgba(124, 110, 245, 0.15);
+    --accent-border: rgba(124, 110, 245, 0.35);
+
+    --border:        rgba(255, 255, 255, 0.07);
+    --border-strong: rgba(255, 255, 255, 0.12);
+
+    --success: #3ecf8e;
+    --danger:  #f06f6f;
+
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.5);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,0.6);
+
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+
+    --font-display: 'DM Serif Display', Georgia, serif;
+    --font-body:    'DM Sans', system-ui, sans-serif;
+    --transition:   0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
